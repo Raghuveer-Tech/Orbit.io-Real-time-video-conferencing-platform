@@ -445,8 +445,30 @@ function VideoMeetComponent() {
                             variant="outlined"
                             fullWidth
                             className={styles.textFieldCustom}
-                            inputProps={{
-                                style: { color: 'white' }
+                            sx={{
+                                // 1. Text color white
+                                '& .MuiInputBase-input': {
+                                    color: 'white'
+                                },
+                                // 2. Label ("Your Name") color pink
+                                '& .MuiInputLabel-root': {
+                                    color: 'pink'
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: 'pink'
+                                },
+                                // 3. Border color
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: 'white' // Normal state
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: 'pink'  // Hover state
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: 'pink'  // Focus state
+                                    },
+                                },
                             }}
                         />
                         <Button variant="contained" className={styles.joinButtonPrimary} onClick={connect} fullWidth>
@@ -568,8 +590,30 @@ function VideoMeetComponent() {
                                     variant="outlined"
                                     size="small"
                                     fullWidth
-                                    inputProps={{
-                                        style: { color: 'white' }
+                                    sx={{
+                                        // 1. Likha hua text white karne ke liye
+                                        '& .MuiInputBase-input': {
+                                            color: 'white'
+                                        },
+                                        // 2. Label ("Type a message...") ka color pink karne ke liye
+                                        '& .MuiInputLabel-root': {
+                                            color: 'pink'
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: 'pink'
+                                        },
+                                        // 3. Border ka color set karne ke liye
+                                        '& .MuiOutlinedInput-root': {
+                                            '& fieldset': {
+                                                borderColor: 'white' // Normal border (White)
+                                            },
+                                            '&:hover fieldset': {
+                                                borderColor: 'pink'  // Hover karne par (Pink)
+                                            },
+                                            '&.Mui-focused fieldset': {
+                                                borderColor: 'pink'  // Click / Focus hone par (Pink)
+                                            },
+                                        },
                                     }}
                                 />
                                 <Button variant='contained' className={styles.sendChatBtn} onClick={sendMessage}>Send</Button>
