@@ -121,7 +121,6 @@ export default function LandingPage() {
                 <div className="hero-right-media">
                     <div className="video-image-frame">
                         <img src="/mobile.jpg" className="hero-call-image" alt="Orbit Video Call Platform Screen" />
-                        <img src="/environment.jpg" className="hero-call-image" alt="Orbit Video Call Platform Screen" />
                         <div className="video-status-tag">
                             <span className="status-dot"></span> Connect Live Video Platform
                         </div>
