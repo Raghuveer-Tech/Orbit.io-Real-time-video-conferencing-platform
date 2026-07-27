@@ -1,0 +1,351 @@
+.zoomContainerWrapper {
+    width: 100vw;
+    height: 100vh;
+    background-color: #050714;
+    font-family: 'Inter', sans-serif;
+    color: #ffffff;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Lobby / Username Entry Screen */
+.lobbyContainer {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at 50% 30%, #091330 0%, #050714 100%);
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.lobbyCard {
+    background: rgba(13, 17, 39, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    padding: 24px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    box-sizing: border-box;
+}
+
+.lobbyCard h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.lobbySubText {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.textFieldCustom label {
+    color: #94a3b8 !important;
+}
+
+.textFieldCustom .MuiOutlinedInput-root {
+    color: white;
+    background-color: #070914;
+    border-radius: 10px;
+}
+
+.textFieldCustom .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.joinButtonPrimary {
+    background: linear-gradient(135deg, #fe424d 0%, #b32a35 100%) !important;
+    font-weight: 700 !important;
+    padding: 10px !important;
+    border-radius: 10px !important;
+}
+
+.videoPreviewContainer {
+    width: 100%;
+    height: 180px;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.videoPreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+/* Meeting Screen Layout */
+.meetScreenLayout {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    background-color: #050714;
+    overflow: hidden;
+}
+
+.stageArea {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    min-width: 0; /* Prevents flex items from overflowing */
+}
+
+.topParticipantHeader {
+    padding: 10px 16px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    z-index: 5;
+}
+
+.participantBadgeCount {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: #cbd5e1;
+}
+
+.conferenceGridView {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+    padding: 8px 16px 85px 16px;
+    box-sizing: border-box;
+    align-content: center;
+    justify-content: center;
+    overflow-y: auto;
+}
+
+.videoBoxWrapper {
+    position: relative;
+    background: #0c1021;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 150px;
+}
+
+.videoElement {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.userNameTag {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #fff;
+}
+
+/* Bottom Control Toolbar */
+.controlToolbar {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(13, 17, 39, 0.9);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 14px;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 10;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    max-width: 95%;
+    overflow-x: auto;
+}
+
+.controlBtn {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: white !important;
+    padding: 8px !important;
+    border-radius: 50% !important;
+}
+
+.disabledBtn {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #ef4444 !important;
+}
+
+.activeScreenBtn {
+    background: rgba(59, 130, 246, 0.3) !important;
+    color: #3b82f6 !important;
+}
+
+.endCallBtn {
+    background: #ef4444 !important;
+    color: white !important;
+    padding: 8px 14px !important;
+    border-radius: 30px !important;
+}
+
+/* Chat Panel Design */
+.rightChatPanel {
+    width: 320px;
+    height: 100%;
+    background: #090d1e;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    z-index: 20;
+    flex-shrink: 0;
+}
+
+.chatHeader {
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chatHeader h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.closeChatBtn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.chattingDisplay {
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chatMessageBubble {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 8px 10px;
+    border-radius: 8px;
+}
+
+.chatSenderName {
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: #fe424d;
+    margin: 0 0 3px 0;
+}
+
+.chatMessageText {
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    margin: 0;
+    word-break: break-word;
+}
+
+.noMessageText {
+    color: #64748b;
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.chattingAreaInputBox {
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    gap: 6px;
+    background: #070a17;
+}
+
+.chattingAreaInputBox .MuiOutlinedInput-root {
+    color: white;
+    background-color: #050714;
+    border-radius: 8px;
+}
+
+.sendChatBtn {
+    background: #fe424d !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+    min-width: 60px !important;
+}
+
+/* RESPONSIVE MEDIA QUERY FOR MOBILE & SMALL SCREENS */
+@media screen and (max-width: 768px) {
+    .meetScreenLayout {
+        flex-direction: column;
+    }
+
+    /* Jab mobile screen ho aur chat open ho, toh chat overlay/drawer ban jaye taaki video cut na ho */
+    .rightChatPanel {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 50vh;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
+        border-radius: 20px 20px 0 0;
+        animation: slideUpChat 0.3s ease-in-out;
+    }
+
+    .conferenceGridView {
+        padding: 5px 10px 80px 10px;
+        grid-template-columns: 1fr; /* Mobile par single/dual column proper fit ho */
+    }
+
+    .videoBoxWrapper {
+        min-height: 140px;
+    }
+}
+
+@keyframes slideUpChat {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}

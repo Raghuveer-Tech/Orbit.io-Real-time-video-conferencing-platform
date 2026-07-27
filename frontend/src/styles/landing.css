@@ -1,0 +1,204 @@
+:root {
+  --bg-dark-core: #090b19;
+  --bg-dark-surface: #11142a;
+  --accent-orange: #FF9839;
+  --accent-orbit: #2563eb;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+}
+
+.landingPageContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-dark-core);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+
+.landingMainContainer {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  padding: 5rem 8% 3rem 8%;
+  gap: 50px;
+  box-sizing: border-box;
+}
+
+.hero-left-content h1 {
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 1.2rem 0;
+  color: var(--text-main);
+  text-align: left;
+}
+
+.text-highlight {
+  color: var(--accent-orange);
+  transition: letter-spacing 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.text-highlight:hover {
+  letter-spacing: 0.5px;
+}
+
+.hero-subtext {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0 0 2rem 0;
+  max-width: 520px;
+  text-align: left;
+}
+
+
+.hero-action-buttons {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-instant-join {
+  background: var(--accent-orbit);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+  transition: transform 0.2s ease, background 0.2s;
+}
+.btn-instant-join:hover {
+  transform: translateY(-2px);
+  background: #1d4ed8;
+}
+
+.btn-trial-link {
+  color: var(--accent-orange);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.9rem 1.5rem;
+  border: 1px solid rgba(255, 152, 57, 0.3);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.btn-trial-link:hover {
+  background: rgba(255, 152, 57, 0.05);
+  border-color: var(--accent-orange);
+  transform: translateY(-1px);
+}
+
+
+.video-image-frame {
+  background: var(--bg-dark-surface);
+  width: 100%;
+  max-width: 480px;
+  border-radius: 16px;
+  padding: 10px;
+  box-sizing: border-box;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: transform 0.4s ease;
+}
+.video-image-frame:hover {
+  transform: scale(1.02);
+}
+
+.hero-call-image {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+}
+
+.video-status-tag {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-size: 0.78rem;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+}
+
+.featuresSectionContainer {
+  padding: 4rem 8% 5rem 8%;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+}
+
+.featureCard {
+  background: var(--bg-dark-surface);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 30px 25px;
+  box-sizing: border-box;
+  text-align: left;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-6px);
+  border-color: var(--accent-orange);
+}
+
+.feature-icon {
+  color: var(--accent-orange);
+  font-size: 2.2rem !important;
+  margin-bottom: 15px;
+}
+
+.featureCard h4 {
+  margin: 0 0 10px 0;
+  font-size: 1.25rem;
+  color: white;
+}
+
+.featureCard p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+@media (max-width: 968px) {
+  .landingMainContainer { grid-template-columns: 1fr; text-align: center; }
+  .hero-left-content h1, .hero-subtext { text-align: center; margin-left: auto; margin-right: auto; }
+  .hero-action-buttons { justify-content: center; }
+  .video-image-frame { margin: 0 auto; }
+}
+
+@media (max-width: 450px) {
+  .hero-left-content h1 { font-size: 2rem; }
+  .hero-subtext { font-size: 0.95rem; }
+}
+
+@media (max-width: 250px) {
+  .hero-action-buttons { flex-direction: column; width: 100%; }
+  .btn-instant-join, .btn-trial-link { width: 100%; text-align: center; justify-content: center; }
+}
