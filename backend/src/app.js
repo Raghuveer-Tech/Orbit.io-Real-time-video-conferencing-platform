@@ -23,6 +23,19 @@ import {
   registerProcessSafetyNets,
 } from "./middleware/errorHandler.js";
 
+// Fail fast if critical env vars are missing — running with an undefined
+// JWT_SECRET would silently sign/verify tokens with the string "undefined",
+// which is a serious security hole.
+const REQUIRED_ENV_VARS = ["MONGO_URI", "JWT_SECRET"];
+const missingEnvVars = REQUIRED_ENV_VARS.filter((key) => !process.env[key]);
+if (missingEnvVars.length > 0) {
+  console.error(
+    `Missing required environment variable(s): ${missingEnvVars.join(", ")}. ` +
+      `Check your .env file (see .env.example).`,
+  );
+  process.exit(1);
+}
+
 const app = express();
 const server = createServer(app);
 const io = connectToSocket(server);

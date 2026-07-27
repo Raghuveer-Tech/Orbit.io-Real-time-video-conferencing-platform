@@ -1,7 +1,10 @@
 import { verifyJwt } from "../utils/jwt.js";
 
 // Array URLs only
-const allowedOrigins = [
+// NOTE: Add any new frontend deployment URL here — this same list is reused
+// by Socket.IO's CORS config (see controllers/socketManager.js) so both the
+// REST API and the WebSocket signaling server stay in sync.
+export const allowedOrigins = [
   "http://localhost:3000",
   "http://127.0.0.1:3000",
   "https://orbit-io-real-time-video-conferenci.vercel.app", //host appliction

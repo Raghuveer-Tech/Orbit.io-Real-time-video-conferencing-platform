@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { Typography, CircularProgress } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import RestoreIcon from '@mui/icons-material/Restore';
+import withAuth from '../utils/withAuth';
 import '../styles/history.css';
 
-export default function History() {
+function History() {
     const { getHistoryOfUser } = useContext(AuthContext);
     const [meetings, setMeetings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -104,3 +105,5 @@ export default function History() {
         </div>
     );
 }
+
+export default withAuth(History);

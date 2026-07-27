@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import { allowedOrigins } from "../middleware/security.js";
 
 let connections = {}; // roomId -> [socketId, ...]
 let messages = {}; // roomId -> [{sender, data, socket-id-sender}]
@@ -9,9 +10,9 @@ let hosts = {}; // roomId -> hostSocketId (first join user as  Host)
 export const connectToSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "*",
+      origin: allowedOrigins,
       methods: ["GET", "POST"],
-      allowedHeaders: ["*"],
+      allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
     },
   });
