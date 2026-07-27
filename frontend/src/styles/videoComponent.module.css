@@ -111,7 +111,7 @@
 .topParticipantHeader {
     padding: 10px 16px;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     z-index: 5;
 }
@@ -128,6 +128,20 @@
     color: #cbd5e1;
 }
 
+.hostIndicatorTop {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(254, 66, 77, 0.12);
+    border: 1px solid rgba(254, 66, 77, 0.4);
+    color: #fe424d;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+/* Grid: multiple participants ke liye */
 .conferenceGridView {
     flex: 1;
     display: grid;
@@ -138,6 +152,20 @@
     align-content: center;
     justify-content: center;
     overflow-y: auto;
+}
+
+/* FIX: Jab call mein sirf tum (host) ho, tab video chhota/half-page na dikhe —
+   pura stage area cover kare, Zoom jaisa */
+.conferenceGridView.singleView {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.conferenceGridView.singleView .videoBoxWrapper {
+    width: min(94%, 1200px);
+    height: 86%;
+    aspect-ratio: unset;
 }
 
 .videoBoxWrapper {
@@ -158,19 +186,46 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    background: #000; /* camera off / no stream ho tab bhi tile black dikhe, transparent na ho */
 }
 
+/* FIX: naam tag pehle video ke peeche/dhundhla dikh raha tha kyunki video hi load nahi hota tha
+   (deprecated addStream/onaddstream bug). Ab bhi extra contrast + z-index diya hai taaki
+   hamesha upar aur saaf dikhe */
 .userNameTag {
     position: absolute;
     bottom: 8px;
     left: 8px;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 0.7rem;
-    font-weight: 500;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ffffff;
+    max-width: calc(100% - 16px);
+}
+
+.userNameTag span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hostBadge {
+    background: linear-gradient(135deg, #fe424d 0%, #b32a35 100%);
     color: #fff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
 }
 
 /* Bottom Control Toolbar */
@@ -262,25 +317,51 @@
     gap: 10px;
 }
 
+/* WhatsApp-style chat bubbles */
 .chatMessageBubble {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
     padding: 8px 10px;
-    border-radius: 8px;
+    border-radius: 10px;
+    max-width: 80%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Apna bheja hua message: right side, green (WhatsApp jaisa) */
+.ownBubble {
+    align-self: flex-end;
+    background: #005c4b;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom-right-radius: 2px;
+}
+
+/* Doosron ka message: left side, dark bubble + naam dikhe */
+.otherBubble {
+    align-self: flex-start;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom-left-radius: 2px;
 }
 
 .chatSenderName {
     font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: #fe424d;
     margin: 0 0 3px 0;
 }
 
 .chatMessageText {
-    font-size: 0.8rem;
-    color: #cbd5e1;
+    font-size: 0.82rem;
+    color: #e5e7eb;
     margin: 0;
     word-break: break-word;
+}
+
+.chatTimeText {
+    font-size: 0.62rem;
+    color: rgba(255,255,255,0.5);
+    align-self: flex-end;
+    margin-top: 3px;
 }
 
 .noMessageText {
@@ -317,7 +398,6 @@
         flex-direction: column;
     }
 
-    /* Jab mobile screen ho aur chat open ho, toh chat overlay/drawer ban jaye taaki video cut na ho */
     .rightChatPanel {
         position: absolute;
         right: 0;
@@ -333,7 +413,12 @@
 
     .conferenceGridView {
         padding: 5px 10px 80px 10px;
-        grid-template-columns: 1fr; /* Mobile par single/dual column proper fit ho */
+        grid-template-columns: 1fr;
+    }
+
+    .conferenceGridView.singleView .videoBoxWrapper {
+        width: 96%;
+        height: 70%;
     }
 
     .videoBoxWrapper {

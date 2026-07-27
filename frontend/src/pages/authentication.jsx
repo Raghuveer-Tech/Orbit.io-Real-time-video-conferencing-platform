@@ -14,7 +14,7 @@ export default function Authentication() {
     const [name, setName] = React.useState("");
     const [error, setError] = React.useState("");
     const [message, setMessage] = React.useState("");
-    const [formState, setFormState] = React.useState(1); // 0: Sign In, 1: Sign Up
+    const [formState, setFormState] = React.useState(0); // 0: Sign In, 1: Sign Up
     const [open, setOpen] = React.useState(false);
     const [alertSeverity, setAlertSeverity] = React.useState("success");
     const [showPassword, setShowPassword] = React.useState(false);
@@ -24,8 +24,7 @@ export default function Authentication() {
 
     let handleAuth = async (e) => {
         e.preventDefault();
-        
-        // बेसिक फ्रंटएंड वैलिडेशन (अगर फील्ड खाली हैं तो रोकें)
+
         if (formState === 1 && !name.trim()) {
             setError("Please enter your full name.");
             return;
@@ -43,11 +42,11 @@ export default function Authentication() {
         try {
             if (formState === 0) {
                 await handleLogin(username, password);
-                
+
                 setAlertSeverity("success");
                 setMessage("Success! You are successfully logged in. Redirecting...");
                 setOpen(true);
-                
+
                 setTimeout(() => {
                     navigate("/home");
                 }, 1500);
@@ -57,7 +56,7 @@ export default function Authentication() {
                 setUsername("");
                 setPassword("");
                 setName("");
-                
+
                 setAlertSeverity("success");
                 setMessage("Account created! Please login with your credentials.");
                 setOpen(true);
@@ -67,7 +66,7 @@ export default function Authentication() {
         } catch (err) {
             let msg = err?.response?.data?.message || "Something went wrong. Please check again.";
             setError(msg);
-            
+
             setAlertSeverity("error");
             setMessage(msg);
             setOpen(true);
@@ -78,19 +77,20 @@ export default function Authentication() {
 
     return (
         <div className="orbitNoScrollWrapper">
-            {/* टॉप नेविगेशन बार */}
+
             <div className="orbitAuthNavbar">
                 <div className="orbitBrandLogo" onClick={() => navigate("/")}>
                     <div className="logoIconRow">
-                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="logo-pulse">
-                        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#007FFF" />
-                        <path d="M2 17L12 22L22 17V12L12 17L2 12V17Z" fill="#0059B2" />
-                    </svg>
+                        <img
+                            src={process.env.PUBLIC_URL + '/orbit-favicon.svg'}
+                            alt="Logo"
+                            style={{ width: '1.8rem', height: '1.8rem' }}
+                        />
                         <span className="brandNameText">Orbit<span className="brand-accent">.io</span></span>
                     </div>
                     <span className="developerTag">by raghuveer kumawat</span>
                 </div>
-                
+
                 <div className="navSwitchRight">
                     {formState === 0 ? (
                         <>
@@ -106,14 +106,14 @@ export default function Authentication() {
                 </div>
             </div>
 
-            {/* मेन बॉडी ग्रिड */}
+
             <div className="orbitMainGridArea">
                 <div className="orbitGridLeft">
                     <div className="headlineBlock">
                         <h1>Premium video meetings.<br /><span className="orangeHighlightText">Now secure for everyone.</span></h1>
                         <p>Connect, collaborate, and celebrate from anywhere with Orbit.io.</p>
                     </div>
-                    
+
                     <div className="previewImageWrapper">
                         <img src="/image.jpg" alt="Orbit Video Interface" className="orbitLandingPreviewImg" />
                         <div className="liveBadge">
@@ -127,13 +127,12 @@ export default function Authentication() {
                         <h2>{formState === 0 ? "Sign in to Orbit" : "Create Account"}</h2>
                         <p className="cardSubtext">Enter your credentials below to proceed</p>
 
-                        {/* यहाँ noValidate जोड़ा गया है ताकि ब्राउज़र का पॉप-अप न आए */}
                         <form onSubmit={handleAuth} className="orbitActualForm" noValidate>
                             {formState === 1 && (
                                 <div className="orbitInputGroup">
                                     <label>Full Name</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         placeholder="Enter your full name"
                                         value={name}
                                         onChange={(e) => { setName(e.target.value); setError(""); }}
@@ -143,8 +142,8 @@ export default function Authentication() {
 
                             <div className="orbitInputGroup">
                                 <label>Username or Email</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     placeholder="name@example.com"
                                     value={username}
                                     onChange={(e) => { setUsername(e.target.value); setError(""); }}
@@ -154,8 +153,8 @@ export default function Authentication() {
                             <div className="orbitInputGroup">
                                 <label>Password</label>
                                 <div className="orbitPasswordWrapper">
-                                    <input 
-                                        type={showPassword ? "text" : "password"} 
+                                    <input
+                                        type={showPassword ? "text" : "password"}
                                         placeholder="••••••••"
                                         value={password}
                                         onChange={(e) => { setPassword(e.target.value); setError(""); }}
@@ -172,7 +171,7 @@ export default function Authentication() {
                                 {loading ? "Processing..." : (formState === 0 ? "Sign In to Account" : "Register Now")}
                             </button>
                         </form>
-                        
+
                         <div className="mobileFooterSwitch">
                             {formState === 0 ? (
                                 <p>New to Orbit.io? <span onClick={() => { setFormState(1); setError(""); }}>Register here</span></p>
@@ -184,7 +183,6 @@ export default function Authentication() {
                 </div>
             </div>
 
-            {/* पॉप-अप नोटिफिकेशन */}
             <Snackbar
                 open={open}
                 autoHideDuration={4000}
@@ -192,12 +190,12 @@ export default function Authentication() {
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 TransitionComponent={Fade}
             >
-                <Alert 
-                    onClose={() => setOpen(false)} 
-                    severity={alertSeverity} 
+                <Alert
+                    onClose={() => setOpen(false)}
+                    severity={alertSeverity}
                     variant="filled"
-                    sx={{ 
-                        width: '100%', 
+                    sx={{
+                        width: '100%',
                         borderRadius: '10px',
                         fontWeight: '600',
                         fontSize: '0.9rem',

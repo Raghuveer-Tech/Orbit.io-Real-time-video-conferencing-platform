@@ -9,6 +9,7 @@ export default function Navbar() {
     const router = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
 
+
     const toggleMenu = () => {
         setIsOpen(!isOpen);
     };

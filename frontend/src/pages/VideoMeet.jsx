@@ -10,9 +10,9 @@ import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import ChatIcon from '@mui/icons-material/Chat';
 import GroupIcon from '@mui/icons-material/Group';
+import StarIcon from '@mui/icons-material/Star';
 import server from '../environment';
 import styles from "../styles/videoComponent.module.css";
-import withAuth from '../utils/withAuth';
 
 const server_url = server.prod;
 var connections = {};
@@ -33,7 +33,7 @@ function VideoMeetComponent() {
     let [video, setVideo] = useState(true);
     let [audio, setAudio] = useState(true);
     let [screen, setScreen] = useState(false);
-    
+
     // Chat box is opened by default as requested
     let [showModal, setModal] = useState(true);
     let [screenAvailable, setScreenAvailable] = useState(false);
@@ -42,9 +42,14 @@ function VideoMeetComponent() {
     let [newMessages, setNewMessages] = useState(0);
     let [askForUsername, setAskForUsername] = useState(true);
     let [username, setUsername] = useState("");
-    
+
     let [videos, setVideos] = useState([]);
     let videoRef = useRef([]);
+
+    // Naye states: real participant names + kaun host hai
+    let [participantNames, setParticipantNames] = useState({});
+    let [hostId, setHostId] = useState(null);
+    const isHost = hostId !== null && hostId === socketIdRef.current;
 
     useEffect(() => {
         getPermissions();
@@ -58,7 +63,7 @@ function VideoMeetComponent() {
     const getPermissions = async () => {
         try {
             const initialStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true }).catch(() => null);
-            
+
             if (initialStream) {
                 setVideoAvailable(true);
                 setAudioAvailable(true);
@@ -87,6 +92,8 @@ function VideoMeetComponent() {
         }
     }, [video, audio]);
 
+    // FIX: pehle sirf ek track (jo bhi pehla mila) replace hota tha.
+    // Ab video + audio dono tracks properly har peer ko replace/sync kiye jaate hain.
     let getUserMediaSuccess = (stream) => {
         try {
             if (window.localStream && window.localStream !== stream) {
@@ -101,10 +108,12 @@ function VideoMeetComponent() {
 
         for (let id in connections) {
             if (id === socketIdRef.current) continue;
-            const sender = connections[id].getSenders().find(s => s.track && s.track.kind === stream.getTracks()[0].kind);
-            if (sender) {
-                sender.replaceTrack(stream.getTracks()[0]);
-            }
+            stream.getTracks().forEach(track => {
+                const sender = connections[id].getSenders().find(s => s.track && s.track.kind === track.kind);
+                if (sender) {
+                    sender.replaceTrack(track);
+                }
+            });
         }
     };
 
@@ -128,7 +137,7 @@ function VideoMeetComponent() {
             for (let id in connections) {
                 const videoSender = connections[id].getSenders().find(s => s.track && s.track.kind === 'video');
                 if (videoSender) videoSender.replaceTrack(window.localStream.getVideoTracks()[0]);
-                
+
                 const audioSender = connections[id].getSenders().find(s => s.track && s.track.kind === 'audio');
                 if (audioSender) audioSender.replaceTrack(window.localStream.getAudioTracks()[0]);
             }
@@ -146,12 +155,13 @@ function VideoMeetComponent() {
             navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
                 .then(getDisplayMediaSuccess)
                 .catch((e) => {
-
                     setScreen(false);
                 });
         }
     };
 
+    // FIX: pehle addStream() + naya createOffer() renegotiation hota tha (deprecated + heavy).
+    // Ab sirf video track replace hoti hai, kisi renegotiation ki zarurat nahi.
     let getDisplayMediaSuccess = (stream) => {
         try {
             window.localStream.getTracks().forEach(track => track.stop());
@@ -162,15 +172,14 @@ function VideoMeetComponent() {
             localVideoref.current.srcObject = stream;
         }
 
+        const screenVideoTrack = stream.getVideoTracks()[0];
+
         for (let id in connections) {
             if (id === socketIdRef.current) continue;
-            connections[id].addStream(window.localStream);
-            connections[id].createOffer().then((description) => {
-                connections[id].setLocalDescription(description)
-                    .then(() => {
-                        socketRef.current.emit('signal', id, JSON.stringify({ 'sdp': connections[id].localDescription }));
-                    });
-            });
+            const sender = connections[id].getSenders().find(s => s.track && s.track.kind === 'video');
+            if (sender && screenVideoTrack) {
+                sender.replaceTrack(screenVideoTrack);
+            }
         }
 
         stream.getTracks().forEach(track => {
@@ -209,7 +218,8 @@ function VideoMeetComponent() {
         socketRef.current.on('signal', gotMessageFromServer);
 
         socketRef.current.on('connect', () => {
-            socketRef.current.emit('join-call', window.location.href);
+            // Apna naam bhi bhejo taaki doosre participants ko asli naam dikhe (Participant #xxxx nahi)
+            socketRef.current.emit('join-call', window.location.href, username);
             socketIdRef.current = socketRef.current.id;
 
             socketRef.current.on('chat-message', addMessage);
@@ -221,26 +231,45 @@ function VideoMeetComponent() {
 
             socketRef.current.on('user-left', (id) => {
                 setVideos((videos) => videos.filter((video) => video.socketId !== id));
+                setParticipantNames((prev) => {
+                    const updated = { ...prev };
+                    delete updated[id];
+                    return updated;
+                });
+                if (connections[id]) {
+                    connections[id].close();
+                    delete connections[id];
+                }
             });
 
-            socketRef.current.on('user-joined', (id, clients) => {
+            // Server ab (id, clients, namesMap, hostSocketId) bhejta hai
+            socketRef.current.on('user-joined', (id, clients, namesMap, hostSocketId) => {
+                if (namesMap) setParticipantNames(namesMap);
+                if (hostSocketId) setHostId(hostSocketId);
+
                 clients.forEach((socketListId) => {
                     if (!connections[socketListId] && socketListId !== socketIdRef.current) {
                         connections[socketListId] = new RTCPeerConnection(peerConfigConnections);
-                        
+
                         connections[socketListId].onicecandidate = function (event) {
                             if (event.candidate != null) {
                                 socketRef.current.emit('signal', socketListId, JSON.stringify({ 'ice': event.candidate }));
                             }
                         };
 
-                        connections[socketListId].onaddstream = (event) => {
+                        // FIX: purana onaddstream (deprecated) hata kar modern "ontrack" use kiya
+                        // isi ki wajah se remote video/audio black/blank dikh raha tha
+                        connections[socketListId].ontrack = (event) => {
+                            const remoteStream = event.streams && event.streams[0]
+                                ? event.streams[0]
+                                : new MediaStream([event.track]);
+
                             let videoExists = videoRef.current.find(video => video.socketId === socketListId);
 
                             if (videoExists) {
                                 setVideos(videos => {
                                     const updatedVideos = videos.map(video =>
-                                        video.socketId === socketListId ? { ...video, stream: event.stream } : video
+                                        video.socketId === socketListId ? { ...video, stream: remoteStream } : video
                                     );
                                     videoRef.current = updatedVideos;
                                     return updatedVideos;
@@ -248,7 +277,7 @@ function VideoMeetComponent() {
                             } else {
                                 let newVideo = {
                                     socketId: socketListId,
-                                    stream: event.stream,
+                                    stream: remoteStream,
                                     autoplay: true,
                                     playsinline: true
                                 };
@@ -261,13 +290,13 @@ function VideoMeetComponent() {
                             }
                         };
 
-                        if (window.localStream !== undefined && window.localStream !== null) {
-                            connections[socketListId].addStream(window.localStream);
-                        } else {
-                            let blackSilenceStream = new MediaStream([black(), silence()]);
-                            window.localStream = blackSilenceStream;
-                            connections[socketListId].addStream(window.localStream);
+                        // FIX: addStream() ki jagah addTrack() — modern browsers ke saath compatible
+                        if (!window.localStream) {
+                            window.localStream = new MediaStream([black(), silence()]);
                         }
+                        window.localStream.getTracks().forEach(track => {
+                            connections[socketListId].addTrack(track, window.localStream);
+                        });
                     }
                 });
 
@@ -313,12 +342,13 @@ function VideoMeetComponent() {
                 window.localStream.getTracks().forEach(track => track.stop());
             }
         } catch (e) { }
-        window.location.href = "/home";
+        // Logged-in user ko /home pe bhejo, guest (bina token) ko landing page (/) pe
+        const isLoggedIn = !!localStorage.getItem("token");
+        window.location.href = isLoggedIn ? "/home" : "/";
     };
 
     let handleEndCall = () => {
         if (socketRef.current) {
-            // Emits backend signal to disconnect all participants or terminate room
             socketRef.current.emit('end-call');
         }
         endCallCleanup();
@@ -327,7 +357,7 @@ function VideoMeetComponent() {
     let addMessage = (data, sender, socketIdSender) => {
         setMessages((prevMessages) => [
             ...prevMessages,
-            { sender: sender, data: data }
+            { sender: sender, data: data, socketIdSender: socketIdSender, time: new Date() }
         ]);
         if (socketIdSender !== socketIdRef.current) {
             setNewMessages((prevNewMessages) => prevNewMessages + 1);
@@ -347,7 +377,7 @@ function VideoMeetComponent() {
         }
         setAskForUsername(false);
         connectToSocketServer();
-        
+
         setTimeout(() => {
             if (localVideoref.current && window.localStream) {
                 localVideoref.current.srcObject = window.localStream;
@@ -362,12 +392,13 @@ function VideoMeetComponent() {
                     <div className={styles.lobbyCard}>
                         <h2>Join Video Meeting</h2>
                         <p className={styles.lobbySubText}>Enter your name to preview your camera and join the room.</p>
-                        <TextField 
-                            id="outlined-basic" 
-                            label="Your Name" 
-                            value={username} 
-                            onChange={e => setUsername(e.target.value)} 
-                            variant="outlined" 
+                        <TextField
+                            id="outlined-basic"
+                            label="Your Name"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && connect()}
+                            variant="outlined"
                             fullWidth
                             className={styles.textFieldCustom}
                         />
@@ -381,20 +412,28 @@ function VideoMeetComponent() {
                 </div>
             ) : (
                 <div className={styles.meetScreenLayout}>
-                    {/* Main Stage Area - automatically scales when chat is open */}
                     <div className={styles.stageArea}>
                         <div className={styles.topParticipantHeader}>
                             <div className={styles.participantBadgeCount}>
                                 <GroupIcon style={{ fontSize: 18 }} />
                                 <span>{videos.length + 1} Participants Active</span>
                             </div>
+                            {isHost && (
+                                <div className={styles.hostIndicatorTop}>
+                                    <StarIcon style={{ fontSize: 15 }} />
+                                    <span>You are the Host</span>
+                                </div>
+                            )}
                         </div>
 
-                        <div className={styles.conferenceGridView}>
+                        <div className={`${styles.conferenceGridView} ${videos.length === 0 ? styles.singleView : ''}`}>
                             {/* Local User Video Box */}
                             <div className={styles.videoBoxWrapper}>
                                 <video className={styles.videoElement} ref={localVideoref} autoPlay muted></video>
-                                <div className={styles.userNameTag}>{username} (You)</div>
+                                <div className={styles.userNameTag}>
+                                    <span>{username} (You)</span>
+                                    {isHost && <span className={styles.hostBadge}>Host</span>}
+                                </div>
                             </div>
 
                             {/* Remote Participants Video Boxes */}
@@ -412,7 +451,10 @@ function VideoMeetComponent() {
                                         playsInline
                                     >
                                     </video>
-                                    <div className={styles.userNameTag}>Participant #{vid.socketId.slice(0, 4)}</div>
+                                    <div className={styles.userNameTag}>
+                                        <span>{participantNames[vid.socketId] || `Participant #${vid.socketId.slice(0, 4)}`}</span>
+                                        {hostId === vid.socketId && <span className={styles.hostBadge}>Host</span>}
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -441,7 +483,7 @@ function VideoMeetComponent() {
                         </div>
                     </div>
 
-                    {/* Right-Side Chat Panel (Open by default, flex layout prevents clipping) */}
+                    {/* Right-Side Chat Panel (WhatsApp style) */}
                     {showModal ? (
                         <div className={styles.rightChatPanel}>
                             <div className={styles.chatHeader}>
@@ -449,25 +491,34 @@ function VideoMeetComponent() {
                                 <button className={styles.closeChatBtn} onClick={() => setModal(false)}>✕</button>
                             </div>
                             <div className={styles.chattingDisplay}>
-                                {messages.length !== 0 ? messages.map((item, index) => (
-                                    <div className={styles.chatMessageBubble} key={index}>
-                                        <p className={styles.chatSenderName}>{item.sender}</p>
-                                        <p className={styles.chatMessageText}>{item.data}</p>
-                                    </div>
-                                )) : <p className={styles.noMessageText}>No messages yet. Send a message to start chatting!</p>}
+                                {messages.length !== 0 ? messages.map((item, index) => {
+                                    const isOwn = item.socketIdSender === socketIdRef.current;
+                                    return (
+                                        <div
+                                            className={`${styles.chatMessageBubble} ${isOwn ? styles.ownBubble : styles.otherBubble}`}
+                                            key={index}
+                                        >
+                                            {!isOwn && <p className={styles.chatSenderName}>{item.sender}</p>}
+                                            <p className={styles.chatMessageText}>{item.data}</p>
+                                            <span className={styles.chatTimeText}>
+                                                {item.time ? item.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                                            </span>
+                                        </div>
+                                    );
+                                }) : <p className={styles.noMessageText}>No messages yet. Send a message to start chatting!</p>}
                             </div>
                             <div className={styles.chattingAreaInputBox}>
-                                <TextField 
-                                    value={message} 
-                                    onChange={(e) => setMessage(e.target.value)} 
+                                <TextField
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                             sendMessage();
                                         }
                                     }}
-                                    id="chat-input-field" 
-                                    label="Type a message..." 
-                                    variant="outlined" 
+                                    id="chat-input-field"
+                                    label="Type a message..."
+                                    variant="outlined"
                                     size="small"
                                     fullWidth
                                 />
@@ -481,4 +532,4 @@ function VideoMeetComponent() {
     );
 }
 
-export default withAuth(VideoMeetComponent);
+export default VideoMeetComponent;

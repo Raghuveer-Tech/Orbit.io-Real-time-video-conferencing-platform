@@ -8,7 +8,7 @@ export default function FeaturesSection() {
     return (
         <div className="featuresSectionContainer">
             <div className="featuresGrid">
-                
+
                 {/* Feature 1 */}
                 <div className="featureCard">
                     <div className="card-overlay">
