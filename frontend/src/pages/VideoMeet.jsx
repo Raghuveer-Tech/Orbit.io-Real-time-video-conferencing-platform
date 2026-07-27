@@ -82,6 +82,18 @@ function VideoMeetComponent() {
             if (window.localStream) {
                 window.localStream.getTracks().forEach(track => track.stop());
             }
+            // Socket aur peer connections bhi saaf karo, warna unmount / remount
+            // (React strict mode, route change) pe purana socket zinda reh jata
+            // hai aur ek hi client 2 baar room mein "join" ho jata hai — jiski
+            // wajah se host ko apna hi video duplicate dikhta hai.
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
+            }
+            for (let id in connections) {
+                connections[id].close();
+            }
+            connections = {};
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isValidMeetingCode]);
@@ -235,6 +247,14 @@ function VideoMeetComponent() {
     };
 
     let connectToSocketServer = () => {
+        // Agar pehle se koi socket zinda hai (double-click, double mount, etc.)
+        // to use pehle band karo — warna 2 sockets same room mein "join" ho
+        // jayenge aur duplicate/wrong video tiles ban jayengi.
+        if (socketRef.current) {
+            socketRef.current.disconnect();
+            socketRef.current = null;
+        }
+
         socketRef.current = io.connect(server_url, { secure: false });
 
         socketRef.current.on('signal', gotMessageFromServer);
@@ -252,6 +272,7 @@ function VideoMeetComponent() {
 
             socketRef.current.on('user-left', (id) => {
                 setVideos((videos) => videos.filter((video) => video.socketId !== id));
+                videoRef.current = videoRef.current.filter((video) => video.socketId !== id);
                 setParticipantNames((prev) => {
                     const updated = { ...prev };
                     delete updated[id];
@@ -278,36 +299,37 @@ function VideoMeetComponent() {
                             }
                         };
 
-                        // purana onaddstream (deprecated) hata kar modern "ontrack" use kiya
+                        // purana onaddstream (deprecated) hata kar modern "ontrack" use kiya.
+                        // Yaha functional setState use kiya hai (prevVideos ke basis pe) taaki
+                        // audio track aur video track ke ontrack events ek saath / race mein
+                        // aane par bhi duplicate tile na bane — pehle yeh stale videoRef.current
+                        // pe depend karta tha jo turant update nahi hota tha.
                         connections[socketListId].ontrack = (event) => {
                             const remoteStream = event.streams && event.streams[0]
                                 ? event.streams[0]
                                 : new MediaStream([event.track]);
 
-                            let videoExists = videoRef.current.find(video => video.socketId === socketListId);
-
-                            if (videoExists) {
-                                setVideos(videos => {
-                                    const updatedVideos = videos.map(video =>
-                                        video.socketId === socketListId ? { ...video, stream: remoteStream } : video
+                            setVideos(prevVideos => {
+                                const idx = prevVideos.findIndex(v => v.socketId === socketListId);
+                                let updatedVideos;
+                                if (idx !== -1) {
+                                    updatedVideos = prevVideos.map((v, i) =>
+                                        i === idx ? { ...v, stream: remoteStream } : v
                                     );
-                                    videoRef.current = updatedVideos;
-                                    return updatedVideos;
-                                });
-                            } else {
-                                let newVideo = {
-                                    socketId: socketListId,
-                                    stream: remoteStream,
-                                    autoplay: true,
-                                    playsinline: true
-                                };
-
-                                setVideos(videos => {
-                                    const updatedVideos = [...videos, newVideo];
-                                    videoRef.current = updatedVideos;
-                                    return updatedVideos;
-                                });
-                            }
+                                } else {
+                                    updatedVideos = [
+                                        ...prevVideos,
+                                        {
+                                            socketId: socketListId,
+                                            stream: remoteStream,
+                                            autoplay: true,
+                                            playsinline: true
+                                        }
+                                    ];
+                                }
+                                videoRef.current = updatedVideos;
+                                return updatedVideos;
+                            });
                         };
 
                         // addStream() ki jagah addTrack() — modern browsers ke saath compatible
@@ -395,6 +417,10 @@ function VideoMeetComponent() {
             alert("Please enter your name");
             return;
         }
+        // Guard: agar socket already ban chuka hai to dobara connect mat karo
+        // (button double-click ya Enter + click dono ek saath lagne se bachne ke liye)
+        if (socketRef.current) return;
+
         setAskForUsername(false);
         connectToSocketServer();
 
