@@ -145,7 +145,7 @@ function HomeComponent() {
                     <button className="navLogoutBtn" onClick={() => {
                         localStorage.removeItem("token");
                         localStorage.removeItem("name");
-                        navigate("/auth");
+                        navigate("/");
                     }}>
                         <LogoutIcon sx={{ fontSize: 18 }} />
                         <span>Logout</span>
