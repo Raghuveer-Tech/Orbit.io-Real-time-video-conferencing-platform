@@ -34,8 +34,8 @@ export default function Footer() {
                     <div className="footer-column">
                         <h4>Support</h4>
                         <ul className="footer-links">
-                            <li><a href="https://youtube.com" target="_blank" rel="noreferrer">See how Guest Mode works</a></li>
-                            <li><a href="https://youtube.com" target="_blank" rel="noreferrer">How to Use Orbit.io</a></li>
+                            <li><a href="https://youtu.be/A9rkB63SNjg?si=AXMxi1wV24XgLajP" target="_blank" rel="noreferrer">See how Guest Mode works</a></li>
+                            <li><a href="https://youtu.be/0c7R_VwlhUo?si=S-uR7BKEgaKxAjFa" target="_blank" rel="noreferrer">How to Use Orbit.io</a></li>
                         </ul>
                     </div>
 
