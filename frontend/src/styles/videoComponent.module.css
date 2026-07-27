@@ -154,8 +154,6 @@
     overflow-y: auto;
 }
 
-/* FIX: Jab call mein sirf tum (host) ho, tab video chhota/half-page na dikhe —
-   pura stage area cover kare, Zoom jaisa */
 .conferenceGridView.singleView {
     display: flex;
     justify-content: center;
@@ -189,9 +187,6 @@
     background: #000; /* camera off / no stream ho tab bhi tile black dikhe, transparent na ho */
 }
 
-/* FIX: naam tag pehle video ke peeche/dhundhla dikh raha tha kyunki video hi load nahi hota tha
-   (deprecated addStream/onaddstream bug). Ab bhi extra contrast + z-index diya hai taaki
-   hamesha upar aur saaf dikhe */
 .userNameTag {
     position: absolute;
     bottom: 8px;
@@ -317,7 +312,7 @@
     gap: 10px;
 }
 
-/* WhatsApp-style chat bubbles */
+/* chat bubbles */
 .chatMessageBubble {
     padding: 8px 10px;
     border-radius: 10px;
@@ -327,7 +322,7 @@
     flex-direction: column;
 }
 
-/* Apna bheja hua message: right side, green (WhatsApp jaisa) */
+/* itself msg right side, green */
 .ownBubble {
     align-self: flex-end;
     background: #005c4b;
@@ -335,7 +330,7 @@
     border-bottom-right-radius: 2px;
 }
 
-/* Doosron ka message: left side, dark bubble + naam dikhe */
+/*left side, dark bubble + name */
 .otherBubble {
     align-self: flex-start;
     background: rgba(255, 255, 255, 0.06);

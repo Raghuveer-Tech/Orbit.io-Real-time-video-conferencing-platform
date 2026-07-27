@@ -153,7 +153,6 @@ function HomeComponent() {
                 </div>
             </div>
 
-            {/* मेन वेलकम और कार्ड्स एरिया */}
             <div className="orbitHomeContentArea">
                 <div className="userWelcomeHeader">
                     <div>
@@ -161,9 +160,7 @@ function HomeComponent() {
                     </div>
                 </div>
 
-                {/* दो मुख्य कार्ड्स (Host & Join) */}
                 <div className="orbitHomeCardsGrid">
-                    {/* कार्ड 1: होस्ट मीटिंग */}
                     <div className="orbitFeatureCard hostCard" onClick={handleOpenHostModal}>
                         <div className="cardTopRowWithImage">
                             <div className="cardTextContent">
@@ -175,7 +172,6 @@ function HomeComponent() {
                         <button className="cardActionBtn3D">Host Meeting</button>
                     </div>
 
-                    {/* कार्ड 2: मीटिंग जॉइन करें */}
                     <div className="orbitFeatureCard joinCard">
                         <div className="cardTopRowWithImage">
                             <div className="cardTextContent">
@@ -199,7 +195,6 @@ function HomeComponent() {
                     </div>
                 </div>
 
-                {/* --- टू-इमेज बैनर सेक्शन (Fixed Size & Styling) --- */}
                 <div className="orbitTwoImageSection">
                     <div className="orbitImageCardBanner">
                         <img src="/HOME01.jpg" alt="Feature 1" className="bannerImageFile" onError={(e) => { e.target.style.display = 'none' }} />
@@ -221,7 +216,6 @@ function HomeComponent() {
 
             <Footer />
 
-            {/* होस्ट मीटिंग शेयर करने वाला पॉप-अप */}
             <Dialog
                 open={openHostModal}
                 onClose={() => !isStartingHost && setOpenHostModal(false)}

@@ -39,7 +39,6 @@ function History() {
 
     return (
         <div className="orbitHistoryWrapper">
-            {/* टॉप नेविगेशन बार */}
             <div className="orbitHistoryNavbar">
                 <div className="orbitBrandLogo" onClick={() => routeTo("/home")}>
                     <div className="logoIconRow">
@@ -61,7 +60,7 @@ function History() {
                 </div>
             </div>
 
-            {/* मेन कंटेंट एरिया */}
+           
             <div className="orbitHistoryContentArea">
                 <div className="historyHeaderTitle">
                     <div className="titleWithIcon">
