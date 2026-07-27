@@ -71,7 +71,7 @@ function HomeComponent() {
     };
 
     let handleOpenHostModal = () => {
-        setGeneratedHostCode(""); 
+        setGeneratedHostCode("");
         setOpenHostModal(true);
     };
 
@@ -126,10 +126,11 @@ function HomeComponent() {
             <div className="orbitHomeNavbar">
                 <div className="orbitBrandLogo" onClick={() => navigate("/home")}>
                     <div className="logoIconRow">
-                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="logo-pulse">
-                        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#007FFF" />
-                        <path d="M2 17L12 22L22 17V12L12 17L2 12V17Z" fill="#0059B2" />
-                    </svg>
+                        <img
+                            src={process.env.PUBLIC_URL + '/orbit-favicon.svg'}
+                            alt="Logo"
+                            style={{ width: '1.8rem', height: '1.8rem' }}
+                        />
                         <span className="brandNameText">Orbit<span className="brand-accent">.io</span></span>
                     </div>
                     <span className="developerTag">by raghuveer kumawat</span>
@@ -169,7 +170,7 @@ function HomeComponent() {
                                 <h3>New Meeting</h3>
                                 <p>Create an instant secure room, generate code & share with participants.</p>
                             </div>
-                            <img src="/HOME02.jpg" alt="Host Meeting" className="cardCustomIllustration" onError={(e)=>{e.target.style.display='none'}} />
+                            <img src="/HOME02.jpg" alt="Host Meeting" className="cardCustomIllustration" onError={(e) => { e.target.style.display = 'none' }} />
                         </div>
                         <button className="cardActionBtn3D">Host Meeting</button>
                     </div>
@@ -181,12 +182,12 @@ function HomeComponent() {
                                 <h3>Join Meeting</h3>
                                 <p>Enter the secure code shared by your host to enter the room.</p>
                             </div>
-                            <img src="/HOME01.jpg" alt="Join Meeting" className="cardCustomIllustration" onError={(e)=>{e.target.style.display='none'}} />
+                            <img src="/HOME01.jpg" alt="Join Meeting" className="cardCustomIllustration" onError={(e) => { e.target.style.display = 'none' }} />
                         </div>
                         <div className="joinInputInline">
-                            <input 
-                                type="text" 
-                                placeholder="Enter meeting code..." 
+                            <input
+                                type="text"
+                                placeholder="Enter meeting code..."
                                 value={meetingCode}
                                 onChange={(e) => setMeetingCode(e.target.value)}
                                 disabled={isJoining}
@@ -201,7 +202,7 @@ function HomeComponent() {
                 {/* --- टू-इमेज बैनर सेक्शन (Fixed Size & Styling) --- */}
                 <div className="orbitTwoImageSection">
                     <div className="orbitImageCardBanner">
-                        <img src="/HOME01.jpg" alt="Feature 1" className="bannerImageFile" onError={(e)=>{e.target.style.display='none'}} />
+                        <img src="/HOME01.jpg" alt="Feature 1" className="bannerImageFile" onError={(e) => { e.target.style.display = 'none' }} />
                         <div className="bannerTextContent">
                             <h4>Secure & HD Video Calling</h4>
                             <p>Experience crystal clear real-time communications powered by advanced WebRTC streams.</p>
@@ -209,7 +210,7 @@ function HomeComponent() {
                     </div>
 
                     <div className="orbitImageCardBanner">
-                        <img src="/HOME02.jpg" alt="Feature 2" className="bannerImageFile" onError={(e)=>{e.target.style.display='none'}} />
+                        <img src="/HOME02.jpg" alt="Feature 2" className="bannerImageFile" onError={(e) => { e.target.style.display = 'none' }} />
                         <div className="bannerTextContent">
                             <h4>Seamless Collaboration</h4>
                             <p>Connect instantly with anyone across the globe securely with one click codes.</p>
@@ -221,8 +222,8 @@ function HomeComponent() {
             <Footer />
 
             {/* होस्ट मीटिंग शेयर करने वाला पॉप-अप */}
-            <Dialog 
-                open={openHostModal} 
+            <Dialog
+                open={openHostModal}
                 onClose={() => !isStartingHost && setOpenHostModal(false)}
                 PaperProps={{
                     style: {
@@ -249,7 +250,7 @@ function HomeComponent() {
                 <DialogContent>
                     <div className="modalBodyContent">
                         <p className="modalSubText">Click the button below to generate a secure meeting code, then share the link or start your meeting.</p>
-                        
+
                         <div className="generatedCodeBoxDisplay">
                             <div className="codeTextInfo">
                                 <span className="codeLabelTag">MEETING CODE</span>
@@ -285,9 +286,9 @@ function HomeComponent() {
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 TransitionComponent={Fade}
             >
-                <Alert 
-                    onClose={() => setOpenSnack(false)} 
-                    severity="success" 
+                <Alert
+                    onClose={() => setOpenSnack(false)}
+                    severity="success"
                     variant="filled"
                     style={{ backgroundColor: '#fe424d', fontWeight: '600', borderRadius: '10px', color: '#fff' }}
                 >

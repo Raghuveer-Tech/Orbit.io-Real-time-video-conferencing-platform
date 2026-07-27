@@ -42,10 +42,11 @@ export default function History() {
             <div className="orbitHistoryNavbar">
                 <div className="orbitBrandLogo" onClick={() => routeTo("/home")}>
                     <div className="logoIconRow">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#fe424d" />
-                            <path d="M2 17L12 22L22 17V12L12 17L2 12V17Z" fill="#b32a35" />
-                        </svg>
+                        <img
+                            src={process.env.PUBLIC_URL + '/orbit-favicon.svg'}
+                            alt="Logo"
+                            style={{ width: '1.8rem', height: '1.8rem' }}
+                        />
                         <span className="brandNameText">Orbit<span className="brand-accent">.io</span></span>
                     </div>
                     <span className="developerTag">by raghuveer kumawat</span>
